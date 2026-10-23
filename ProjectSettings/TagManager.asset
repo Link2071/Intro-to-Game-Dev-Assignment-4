@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Pellets
   - Walls
+  - Flowers
   layers:
   - Default
   - TransparentFX
