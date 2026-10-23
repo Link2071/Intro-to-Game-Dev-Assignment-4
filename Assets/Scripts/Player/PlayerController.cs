@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -6,10 +7,14 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5;
     [SerializeField] private Animator animator;
+    [SerializeField] private ParticleSystem dustPrefab;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private List<AudioClip> movementSounds;
     private char _lastInput;
     private char _currentInput;
     private Vector3 _moveDir;
     private bool _reachedTarget => Vector3.Distance(transform.position, _moveDir) < 0.0001f;
+    private bool _hitWall;
 
     void Start()
     {
@@ -33,6 +38,15 @@ public class PlayerController : MonoBehaviour
             if (_lastInput != 0 && !IsWall(TargetDir(_lastInput)))
             {
                 _moveDir = TargetDir(_lastInput);
+                Instantiate(dustPrefab, transform.position, Quaternion.identity);
+                PlayMovementSound(_moveDir);
+                _hitWall = false;
+            }
+
+            else if (IsWall(TargetDir(_lastInput)) && !_hitWall) 
+            {
+                PlayMovementSound(TargetDir(_lastInput));
+                _hitWall = true;
             }
         }
         
@@ -40,6 +54,16 @@ public class PlayerController : MonoBehaviour
 
         float delta = moveSpeed * Time.deltaTime;
         transform.position = Vector3.MoveTowards(transform.position, _moveDir, delta);
+    }
+
+    private void PlayMovementSound(Vector3 target)
+    {
+        audioSource.pitch = Random.Range(0.99f, 1.01f);
+
+        Collider2D collider = Physics2D.OverlapPoint(target);
+        if (collider != null && collider.CompareTag("Pellets")) audioSource.PlayOneShot(movementSounds[2]);
+        else if (collider != null && collider.CompareTag("Walls")) audioSource.PlayOneShot(movementSounds[1]);
+        else audioSource.PlayOneShot(movementSounds[0]);
     }
 
     private void SetAnimation()
