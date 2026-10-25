@@ -1,10 +1,5 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor.Animations;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.SocialPlatforms.Impl;
-
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5;
@@ -71,7 +66,7 @@ public class PlayerController : MonoBehaviour
     private void CollectItem(Vector2 target)
     {
         Collider2D collider = Physics2D.OverlapPoint(target);
-        if(collider == null) return;
+        if(collider == null || collider.CompareTag("Teleporter")) return;
         switch (collider.tag)
         {
             case "Pellets":
@@ -79,6 +74,7 @@ public class PlayerController : MonoBehaviour
                 break;
             case "PowerPellets":
                 ScoreManager.instance.UpdateScore(50);
+                GhostManager.instance.StartScaredTimer();
                 break;
             case "Flowers":
                 ScoreManager.instance.UpdateScore(100);
@@ -94,6 +90,7 @@ public class PlayerController : MonoBehaviour
 
         Collider2D collider = Physics2D.OverlapPoint(target);
         if (collider != null && collider.CompareTag("Pellets")) audioSource.PlayOneShot(movementSounds[2]);
+        else if (collider != null && collider.CompareTag("PowerPellets")) audioSource.PlayOneShot(movementSounds[2]);
         else if (collider != null && collider.CompareTag("Walls")) 
         {
             audioSource.PlayOneShot(movementSounds[1]);
@@ -150,6 +147,13 @@ public class PlayerController : MonoBehaviour
             default:
                 return _moveDir;
         }
+    }
+
+    public void TeleportPlayer(Vector2 target)
+    {
+        transform.position = target; 
+        Vector3 moveDir = target.x > 0 ? Vector3.left : Vector3.right;
+        _moveDir = transform.position + moveDir;
     }
 
     void OnTriggerEnter2D(Collider2D collision)

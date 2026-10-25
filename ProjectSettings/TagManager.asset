@@ -7,6 +7,8 @@ TagManager:
   - Pellets
   - Walls
   - Flowers
+  - PowerPellets
+  - Teleporter
   layers:
   - Default
   - TransparentFX
