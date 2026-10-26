@@ -9,6 +9,7 @@ TagManager:
   - Flowers
   - PowerPellets
   - Teleporter
+  - Ghosts
   layers:
   - Default
   - TransparentFX

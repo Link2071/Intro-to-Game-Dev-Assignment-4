@@ -7,6 +7,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private ParticleSystem dustPrefab;
     [SerializeField] private ParticleSystem wallHit;
     [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip ghostEatSound;
+    [SerializeField] private AudioClip deathSound;
+    [SerializeField] private LivesDisplay livesDisplay;
     [SerializeField] private List<AudioClip> movementSounds;
     public static PlayerController instance { get; private set; }
     private char _lastInput;
@@ -14,10 +17,13 @@ public class PlayerController : MonoBehaviour
     private Vector3 _moveDir;
     private bool _reachedTarget => Vector3.Distance(transform.position, _moveDir) < 0.0001f;
     private bool _hitWall;
+    private bool _canMove = false;
+    private Vector3 _startPos;
     public int score { get; private set; }
 
     void Awake()
     {
+        _startPos = transform.position; 
         if(instance != null && instance != this) Destroy(this);
         instance = this;
     }
@@ -29,6 +35,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (!_canMove) return;
+
         float delta = moveSpeed * Time.deltaTime;
         transform.position = Vector3.MoveTowards(transform.position, _moveDir, delta);
 
@@ -66,7 +74,7 @@ public class PlayerController : MonoBehaviour
     private void CollectItem(Vector2 target)
     {
         Collider2D collider = Physics2D.OverlapPoint(target);
-        if(collider == null || collider.CompareTag("Teleporter")) return;
+        if(collider == null || collider.CompareTag("Teleporter") || collider.CompareTag("Ghosts")) return;
         switch (collider.tag)
         {
             case "Pellets":
@@ -97,6 +105,11 @@ public class PlayerController : MonoBehaviour
             Instantiate(wallHit, _moveDir, Quaternion.identity);
         }
         else audioSource.PlayOneShot(movementSounds[0]);
+    }
+
+    public void PlayGhostEatSound()
+    {
+        audioSource.PlayOneShot(ghostEatSound);
     }
 
     private void SetAnimation()
@@ -162,5 +175,35 @@ public class PlayerController : MonoBehaviour
         {
             CollectItem(collision.transform.position);
         }
+    }
+
+    public void Die()
+    {
+        GhostManager.instance.SetGhostsCanMove(false);
+        SetMovementState(false);
+
+        livesDisplay.RemoveLife();
+        audioSource.PlayOneShot(deathSound);
+
+        Invoke("ResetPosition", 2);
+
+        animator.SetTrigger("Dead");
+        GhostManager.instance.SetGhostStates(GhostStates.normal);
+    }
+
+    private void ResetPosition()
+    {
+        transform.position = _startPos;
+        _moveDir = transform.position;
+        _lastInput = (char)0;
+        _currentInput = (char)0;
+
+        GhostManager.instance.SetGhostsCanMove(true);
+        SetMovementState(true);
+    }
+
+    public void SetMovementState(bool canMove)
+    {
+        _canMove = canMove;
     }
 }

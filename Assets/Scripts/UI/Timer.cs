@@ -4,13 +4,9 @@ using UnityEngine;
 public class Timer : MonoBehaviour
 {
     [SerializeField] private TMP_Text timerText;
-    private bool _isCounting;
+    private bool _isCounting = false;
     private float elapsedTime = 0f;
 
-    private void Awake()
-    {
-        StartTiming();
-    }
 
     private void Update()
     {
@@ -27,5 +23,15 @@ public class Timer : MonoBehaviour
     public void StartTiming()
     {
         _isCounting = true;
+    }
+
+    public void StopTiming()
+    {
+        _isCounting = false;
+    }
+
+    public float GetTime()
+    {
+        return elapsedTime;
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,9 +7,10 @@ public class GhostManager : MonoBehaviour
     [SerializeField] private GameObject scaredTimerObj;
     [SerializeField] private List<GameObject> ghosts;
     public static GhostManager instance;
-    private float _scaredTimer = 10f;
+    public GhostStates globalGhostState;
+    private float _scaredTimer = 7f;
+    private float _recoveryTimer = 3f;
     private float _timer = 0f;
-    private bool _isScared = false;
 
     void Awake()
     {
@@ -18,27 +20,83 @@ public class GhostManager : MonoBehaviour
 
     private void Update()
     {
-        if (_isScared)
+        if (globalGhostState == GhostStates.danger)
         {
             _timer -= Time.deltaTime;
             if (_timer <= 0)
             {
-                _isScared = false;
+                globalGhostState = GhostStates.recover;
+                _timer = _recoveryTimer;
+                SetGhostStates();
+            }
+        }
+
+        if (globalGhostState == GhostStates.recover)
+        {
+            _timer -= Time.deltaTime;
+            if (_timer <= 0)
+            {
+                globalGhostState = GhostStates.normal;
+                SetGhostStates();
                 scaredTimerObj.SetActive(false);
             }
         }
     }
     public void StartScaredTimer()
     {
-        _isScared = true;
+        scaredTimerObj.GetComponent<ScaredTimer>().ResetTimer();
+        MusicManager.instance.PlayMusic(MusicStates.danger);
+        globalGhostState = GhostStates.danger;
         scaredTimerObj.SetActive(true);
         _timer = _scaredTimer;
 
-        foreach (GameObject ghost in ghosts)
+        SetGhostStates();
+    }
+
+    private void SetGhostStates()
+    {
+        int stateIndex = (int)globalGhostState + 1;
+        MusicManager.instance.PlayMusic((MusicStates)stateIndex);
+        foreach (GameObject ghosts in ghosts)
         {
-            GhostMovement ghostScript = ghost.GetComponent<GhostMovement>();
+            GhostMovement ghostScript = ghosts.GetComponent<GhostMovement>();
             if (ghostScript == null) return;
-            ghostScript.SetScaredState();
+            ghostScript.SetGhostState();
+        }
+    }
+
+    public void SetGhostStates(GhostStates newState)
+    {
+        globalGhostState = newState;
+
+        int stateIndex = (int)globalGhostState + 1;
+        MusicManager.instance.PlayMusic((MusicStates)stateIndex);
+
+        foreach (GameObject ghosts in ghosts)
+        {
+            GhostMovement ghostScript = ghosts.GetComponent<GhostMovement>();
+            if (ghostScript == null) return;
+            ghostScript.SetGhostState();
+        }
+    }
+
+    public void ResetGhostsPosition()
+    {
+        foreach (GameObject ghosts in ghosts)
+        {
+            GhostMovement ghostScript = ghosts.GetComponent<GhostMovement>();
+            if (ghosts == null) return;
+            ghostScript.ResetPosition();
+        }
+    }
+
+    public void SetGhostsCanMove(bool canMove)
+    {
+        foreach (GameObject ghosts in ghosts)
+        {
+            GhostMovement ghostScript = ghosts.GetComponent<GhostMovement>();
+            if (ghosts == null) return;
+            ghostScript.SetCanMove(canMove);
         }
     }
 }
