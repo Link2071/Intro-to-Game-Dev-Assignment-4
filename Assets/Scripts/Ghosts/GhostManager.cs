@@ -59,7 +59,7 @@ public class GhostManager : MonoBehaviour
         MusicManager.instance.PlayMusic((MusicStates)stateIndex);
         foreach (GameObject ghosts in ghosts)
         {
-            GhostMovement ghostScript = ghosts.GetComponent<GhostMovement>();
+            GhostController ghostScript = ghosts.GetComponent<GhostController>();
             if (ghostScript == null) return;
             ghostScript.SetGhostState();
         }
@@ -74,7 +74,7 @@ public class GhostManager : MonoBehaviour
 
         foreach (GameObject ghosts in ghosts)
         {
-            GhostMovement ghostScript = ghosts.GetComponent<GhostMovement>();
+            GhostController ghostScript = ghosts.GetComponent<GhostController>();
             if (ghostScript == null) return;
             ghostScript.SetGhostState();
         }
@@ -84,7 +84,7 @@ public class GhostManager : MonoBehaviour
     {
         foreach (GameObject ghosts in ghosts)
         {
-            GhostMovement ghostScript = ghosts.GetComponent<GhostMovement>();
+            GhostController ghostScript = ghosts.GetComponent<GhostController>();
             if (ghosts == null) return;
             ghostScript.ResetPosition();
         }
@@ -94,7 +94,7 @@ public class GhostManager : MonoBehaviour
     {
         foreach (GameObject ghosts in ghosts)
         {
-            GhostMovement ghostScript = ghosts.GetComponent<GhostMovement>();
+            GhostController ghostScript = ghosts.GetComponent<GhostController>();
             if (ghosts == null) return;
             ghostScript.SetCanMove(canMove);
         }

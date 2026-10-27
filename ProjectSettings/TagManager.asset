@@ -10,6 +10,8 @@ TagManager:
   - PowerPellets
   - Teleporter
   - Ghosts
+  - GhostWalls
+  - GhostSpawn
   layers:
   - Default
   - TransparentFX

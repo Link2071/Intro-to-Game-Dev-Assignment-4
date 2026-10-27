@@ -139,7 +139,7 @@ public class PlayerController : MonoBehaviour
     private bool IsWall(Vector3 target)
     {
         Collider2D collider = Physics2D.OverlapPoint(target);
-        if (collider != null && collider.CompareTag("Walls"))
+        if (collider != null && (collider.CompareTag("Walls") || collider.CompareTag("GhostWalls")))
         {
             return true;
         }
