@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioClip deathSound;
     [SerializeField] private LivesDisplay livesDisplay;
     [SerializeField] private List<AudioClip> movementSounds;
+    [SerializeField] private GameOverLogic gameOverLogic;
     public static PlayerController instance { get; private set; }
     private char _lastInput;
     private char _currentInput;
@@ -47,12 +48,12 @@ public class PlayerController : MonoBehaviour
 
         if (_reachedTarget)
         {
-            if (_currentInput != 0 && !IsWall(TargetDir(_currentInput)))
+            if (_currentInput != 0 && !IsNotValid(TargetDir(_currentInput)))
             {
                 _lastInput = _currentInput;
             }
 
-            if (_lastInput != 0 && !IsWall(TargetDir(_lastInput)))
+            if (_lastInput != 0 && !IsNotValid(TargetDir(_lastInput)))
             {
                 _moveDir = TargetDir(_lastInput);
                 Instantiate(dustPrefab, transform.position, Quaternion.identity);
@@ -61,7 +62,7 @@ public class PlayerController : MonoBehaviour
                 CollectItem(_moveDir);
             }
 
-            else if (IsWall(TargetDir(_lastInput)) && !_hitWall) 
+            else if (IsNotValid(TargetDir(_lastInput)) && !_hitWall) 
             {
                 PlayMovementSound(TargetDir(_lastInput));
                 _hitWall = true;
@@ -73,22 +74,35 @@ public class PlayerController : MonoBehaviour
 
     private void CollectItem(Vector2 target)
     {
-        Collider2D collider = Physics2D.OverlapPoint(target);
-        if(collider == null || collider.CompareTag("Teleporter") || collider.CompareTag("Ghosts")) return;
-        switch (collider.tag)
-        {
-            case "Pellets":
-                ScoreManager.instance.UpdateScore(10);
-                break;
-            case "PowerPellets":
-                ScoreManager.instance.UpdateScore(50);
-                GhostManager.instance.StartScaredTimer();
-                break;
-            case "Flowers":
-                ScoreManager.instance.UpdateScore(100);
-                break;
+        Collider2D[] colliders = Physics2D.OverlapPointAll(target);
+        foreach (Collider2D collider in colliders){
+            if(collider == null || collider.CompareTag("Teleporter") || collider.CompareTag("Ghosts") || collider.CompareTag("EdgeRoamingTrigger") || collider.CompareTag("Player")) continue;
+            switch (collider.tag)
+            {
+                case "Pellets":
+                    ScoreManager.instance.UpdateScore(10);
+                    break;
+                case "PowerPellets":
+                    ScoreManager.instance.UpdateScore(50);
+                    GhostManager.instance.StartScaredTimer();
+                    break;
+                case "Flowers":
+                    ScoreManager.instance.UpdateScore(100);
+                    break;
+          }
+           Destroy(collider.gameObject);
+           GameObject[] pellets = GameObject.FindGameObjectsWithTag("Pellets");
+           GameObject[] powerPellets = GameObject.FindGameObjectsWithTag("PowerPellets");
+           if (pellets.Length == 1 && powerPellets.Length == 0)
+            {
+                gameOverLogic.GameOver();
+            }
+
+            else if (pellets.Length == 0 && powerPellets.Length == 1)
+            {
+                gameOverLogic.GameOver();
+            }
         }
-        Destroy(collider.gameObject);
     }
 
 
@@ -136,10 +150,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private bool IsWall(Vector3 target)
+    private bool IsNotValid(Vector3 target)
     {
         Collider2D collider = Physics2D.OverlapPoint(target);
-        if (collider != null && (collider.CompareTag("Walls") || collider.CompareTag("GhostWalls")))
+        if (collider != null && (collider.CompareTag("Walls") || collider.CompareTag("GhostWalls") || collider.CompareTag("Ghosts")))
         {
             return true;
         }
@@ -188,6 +202,8 @@ public class PlayerController : MonoBehaviour
         Invoke("ResetPosition", 2);
 
         animator.SetTrigger("Dead");
+        GhostManager.instance.ResetGhostsPosition();
+        GhostManager.instance.SetGhostsCanMove(false);
         GhostManager.instance.SetGhostStates(GhostStates.normal);
     }
 

@@ -20,7 +20,6 @@ public class CherryMovement : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, _originDir, delta);
         if (_reachedTarget)
         {
-            Debug.Log("Destroyed flower");
             _cherryController.DestroyedCherry();
             Destroy(gameObject);
         }

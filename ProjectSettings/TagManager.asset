@@ -12,6 +12,7 @@ TagManager:
   - Ghosts
   - GhostWalls
   - GhostSpawn
+  - EdgeRoamingTrigger
   layers:
   - Default
   - TransparentFX

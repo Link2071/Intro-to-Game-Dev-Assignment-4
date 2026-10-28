@@ -23,6 +23,7 @@ public class RoundStartLogic : MonoBehaviour
         yield return new WaitForSeconds(1);
 
         PlayerController.instance.SetMovementState(true);
+        GhostManager.instance.SetGhostsCanMove(true);
         timerScript.StartTiming();
 
         gameObject.SetActive(false);

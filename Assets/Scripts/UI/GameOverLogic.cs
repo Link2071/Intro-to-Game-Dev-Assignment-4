@@ -11,6 +11,8 @@ public class GameOverLogic : MonoBehaviour
     public void GameOver()
     {
         gameOverDisplay.SetActive(true);
+        PlayerController.instance.SetMovementState(false);
+        GhostManager.instance.SetGhostsCanMove(false);
         Invoke("ReturnToMenu", 3);
 
         int highScore = PlayerPrefs.GetInt("HighScore", -1);
