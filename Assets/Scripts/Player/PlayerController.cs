@@ -20,6 +20,8 @@ public class PlayerController : MonoBehaviour
     private bool _hitWall;
     private bool _canMove = false;
     private Vector3 _startPos;
+    public float _moveSpeedMult = 1;
+    public float _scoreMult = 1;
     public int score { get; private set; }
 
     void Awake()
@@ -38,7 +40,7 @@ public class PlayerController : MonoBehaviour
     {
         if (!_canMove) return;
 
-        float delta = moveSpeed * Time.deltaTime;
+        float delta = moveSpeed * _moveSpeedMult * Time.deltaTime;
         transform.position = Vector3.MoveTowards(transform.position, _moveDir, delta);
 
         if (Input.GetKeyDown(KeyCode.W)) _currentInput = 'w';
@@ -80,14 +82,17 @@ public class PlayerController : MonoBehaviour
             switch (collider.tag)
             {
                 case "Pellets":
-                    ScoreManager.instance.UpdateScore(10);
+                    ScoreManager.instance.UpdateScore((int)(10 * _scoreMult));
                     break;
                 case "PowerPellets":
-                    ScoreManager.instance.UpdateScore(50);
+                    ScoreManager.instance.UpdateScore((int)(50 * _scoreMult));
                     GhostManager.instance.StartScaredTimer();
                     break;
                 case "Flowers":
-                    ScoreManager.instance.UpdateScore(100);
+                    ScoreManager.instance.UpdateScore((int)(100 * _scoreMult));
+                    break;
+                case "Upgrades":
+                    CardManager.instance.DisplayCards();
                     break;
           }
            Destroy(collider.gameObject);
@@ -221,5 +226,15 @@ public class PlayerController : MonoBehaviour
     public void SetMovementState(bool canMove)
     {
         _canMove = canMove;
+    }
+
+    public void SetMoveSpeedMult(float factor)
+    {
+        _moveSpeedMult = _moveSpeedMult * factor;
+    }
+
+    public void SetScoreMult(float factor)
+    {
+        _scoreMult = _scoreMult * factor;
     }
 }

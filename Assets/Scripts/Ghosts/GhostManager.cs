@@ -90,6 +90,16 @@ public class GhostManager : MonoBehaviour
         }
     }
 
+    public void SetGhostsMoveSpeedMult(float factor)
+    {
+        foreach (GameObject ghosts in ghosts)
+        {
+            GhostController ghostScript = ghosts.GetComponent<GhostController>();
+            if (ghosts == null) return;
+            ghostScript.SetMoveSpeedMult(factor);
+        }
+    }
+
     public void SetGhostsCanMove(bool canMove)
     {
         foreach (GameObject ghosts in ghosts)

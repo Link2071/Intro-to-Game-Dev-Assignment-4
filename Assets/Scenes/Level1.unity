@@ -9091,6 +9091,7 @@ MonoBehaviour:
   - {fileID: 103448335}
   - {fileID: 1105760318}
   _currentEdgeRoamingTrigger: 0
+  _moveSpeedMult: 1
 --- !u!58 &421099835
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -16240,6 +16241,7 @@ MonoBehaviour:
   edgeRoamingStart: {x: 0, y: 0, z: 0}
   edgeRoamingTriggers: []
   _currentEdgeRoamingTrigger: 0
+  _moveSpeedMult: 1
 --- !u!58 &689195143
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -28904,6 +28906,7 @@ MonoBehaviour:
   edgeRoamingStart: {x: 0, y: 0, z: 0}
   edgeRoamingTriggers: []
   _currentEdgeRoamingTrigger: 0
+  _moveSpeedMult: 1
 --- !u!58 &1219733806
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -35773,7 +35776,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f762e783b251a8488261b0d08010bf3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  moveSpeed: 20
+  moveSpeed: 5
   animator: {fileID: 1616080238}
   dustPrefab: {fileID: 4602066729756013677, guid: 5a69af49357fa294f8333184b05973ee, type: 3}
   wallHit: {fileID: 4097360527954692125, guid: 7bb9d099fa502bd41a36fbc34b8563ef, type: 3}
@@ -35786,6 +35789,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: f70ee468a95bb914b85be08255c5af93, type: 3}
   - {fileID: 8300000, guid: 92f0dc659313afb42b2247e29e81f675, type: 3}
   gameOverLogic: {fileID: 698829877}
+  _moveSpeedMult: 1
+  _scoreMult: 1
 --- !u!95 &1616080238
 Animator:
   serializedVersion: 7
@@ -43642,6 +43647,7 @@ MonoBehaviour:
   edgeRoamingStart: {x: 0, y: 0, z: 0}
   edgeRoamingTriggers: []
   _currentEdgeRoamingTrigger: 0
+  _moveSpeedMult: 1
 --- !u!58 &1995626818
 CircleCollider2D:
   m_ObjectHideFlags: 0

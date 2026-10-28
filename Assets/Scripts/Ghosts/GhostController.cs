@@ -20,6 +20,7 @@ public class GhostController : MonoBehaviour
     private bool _inSpawn;
     private float _normalSpeed = 4.5f;
     private float _altSpeed = 2.25f;
+    public float _moveSpeedMult = 1;
     private Vector3 _moveDir;
     private Vector3 _lastTile;
 
@@ -35,7 +36,7 @@ public class GhostController : MonoBehaviour
         if (!_canMove) return;
 
         float currentMoveSpeed = _currentState == GhostStates.normal ? _normalSpeed : _altSpeed;
-        float delta = currentMoveSpeed * Time.deltaTime;
+        float delta = currentMoveSpeed * _moveSpeedMult * Time.deltaTime;
         transform.position = Vector3.MoveTowards(transform.position, _moveDir, delta);
 
         _animator.runtimeAnimatorController = controllers[(int)_currentState];
@@ -164,6 +165,7 @@ public class GhostController : MonoBehaviour
         validTags.Add("Flowers");
         validTags.Add("Player");
         validTags.Add("EdgeRoamingTrigger");
+        validTags.Add("Upgrades");
         if (_inSpawn) 
         {
             validTags.Add("GhostSpawn");
@@ -187,6 +189,11 @@ public class GhostController : MonoBehaviour
     public void SetCanMove(bool canMove)
     {
         _canMove = canMove;
+    }
+
+    public void SetMoveSpeedMult(float factor)
+    {
+        _moveSpeedMult = _moveSpeedMult * factor;
     }
 
     private void Die()
